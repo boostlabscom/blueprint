@@ -204,7 +204,11 @@ export class NumericInput extends AbstractPureComponent2<HTMLInputProps & INumer
     };
 
     public static getDerivedStateFromProps(props: INumericInputProps, state: INumericInputState) {
-        const nextState = { prevMinProp: props.min, prevMaxProp: props.max, prevValueProp: props.value };
+        const nextState = {
+            prevMaxProp: props.max,
+            prevMinProp: props.min,
+            prevValueProp: props.value,
+        };
 
         const didMinChange = props.min !== state.prevMinProp;
         const didMaxChange = props.max !== state.prevMaxProp;
@@ -321,12 +325,23 @@ export class NumericInput extends AbstractPureComponent2<HTMLInputProps & INumer
     // ==============
 
     private renderButtons() {
-        const { intent } = this.props;
+        const { intent, max, min } = this.props;
+        const { value } = this.state;
         const disabled = this.props.disabled || this.props.readOnly;
         return (
             <ButtonGroup className={Classes.FIXED} key="button-group" vertical={true}>
-                <Button disabled={disabled} icon="chevron-up" intent={intent} {...this.incrementButtonHandlers} />
-                <Button disabled={disabled} icon="chevron-down" intent={intent} {...this.decrementButtonHandlers} />
+                <Button
+                    disabled={disabled || (value !== "" && +value >= max)}
+                    icon="chevron-up"
+                    intent={intent}
+                    {...this.incrementButtonHandlers}
+                />
+                <Button
+                    disabled={disabled || (value !== "" && +value <= min)}
+                    icon="chevron-down"
+                    intent={intent}
+                    {...this.decrementButtonHandlers}
+                />
             </ButtonGroup>
         );
     }
@@ -494,7 +509,10 @@ export class NumericInput extends AbstractPureComponent2<HTMLInputProps & INumer
         const currValue = this.state.value || NumericInput.VALUE_ZERO;
         const nextValue = this.getSanitizedValue(currValue, delta);
 
-        this.setState({ shouldSelectAfterUpdate: this.props.selectAllOnIncrement, value: nextValue });
+        this.setState({
+            shouldSelectAfterUpdate: this.props.selectAllOnIncrement,
+            value: nextValue,
+        });
 
         return nextValue;
     }

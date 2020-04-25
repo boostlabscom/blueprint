@@ -292,7 +292,11 @@ describe("<QueryList>", () => {
 
             const { filmQueryList, handlePaste } = mountForPasteTest({
                 // Must pass these two props to enable the "Create item" option.
-                createNewItemFromQuery: query => ({ title: query, rank: createdRank, year: createdYear }),
+                createNewItemFromQuery: query => ({
+                    rank: createdRank,
+                    title: query,
+                    year: createdYear,
+                }),
                 createNewItemRenderer: () => <div>Create item</div>,
             });
 
@@ -313,6 +317,35 @@ describe("<QueryList>", () => {
             // Highlight the last *already existing* item pasted.
             assert.deepEqual(filmQueryList.state().activeItem, item2);
             assert.deepEqual(filmQueryList.state().query, "");
+        });
+    });
+
+    describe("query", () => {
+        it("trims leading and trailing whitespace when creating new items", () => {
+            let triggerInputQueryChange: ((e: any) => void) | undefined;
+            const createNewItemFromQuerySpy = sinon.spy();
+            const createNewItemRendererSpy = sinon.spy();
+            // we must supply our own renderer so that we can hook into IQueryListRendererProps#handleQueryChange
+            const renderer = sinon.spy((props: IQueryListRendererProps<IFilm>) => {
+                triggerInputQueryChange = props.handleQueryChange;
+                return <div>{props.itemList}</div>;
+            });
+            shallow(
+                <FilmQueryList
+                    {...testProps}
+                    renderer={renderer}
+                    createNewItemFromQuery={createNewItemFromQuerySpy}
+                    createNewItemRenderer={createNewItemRendererSpy}
+                />,
+            );
+
+            const untrimmedQuery = " foo ";
+            const trimmedQuery = untrimmedQuery.trim();
+
+            assert.isDefined(triggerInputQueryChange, "query list should render with input change callbacks");
+            triggerInputQueryChange!({ target: { value: untrimmedQuery } });
+            assert.isTrue(createNewItemFromQuerySpy.calledWith(trimmedQuery));
+            assert.isTrue(createNewItemRendererSpy.calledWith(trimmedQuery));
         });
     });
 });

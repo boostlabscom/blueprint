@@ -4,7 +4,7 @@
 
 Blueprint is a React UI toolkit for the web.
 
-This package contains the [ESLint](https://eslint.org/) configuration for Blueprint. It enables lint rules which enforce code style conventions and enables the `@blueprintjs/eslint-plugin-blueprint` plugin.
+This package contains the [ESLint](https://eslint.org/) configuration for Blueprint. It enables lint rules which enforce code style conventions and enables the `@blueprintjs/eslint-plugin` plugin.
 
 ## Installation
 
@@ -18,8 +18,15 @@ Enable this configuration in your ESLint configuration file (e.g. `.eslintrc.jso
 
 ```json
 {
-    "extends": [
-        "@blueprintjs/eslint-config"
-    ]
+    "extends": ["@blueprintjs/eslint-config"]
 }
+```
+
+### VSCode
+
+If you use VSCode, install the [dbaeumer.vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) plugin to lint your code in the editor. We recommend enabling these global VSCode settings:
+
+```json
+"editor.formatOnSave": true,
+"eslint.format.enable": true
 ```

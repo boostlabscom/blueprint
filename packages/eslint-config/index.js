@@ -15,33 +15,47 @@
 
 const path = require("path");
 
+/**
+ * Enable @blueprintjs/eslint-plugin.
+ * For TS files, configure typescript-eslint, including type-aware lint rules which use the TS program.
+ */
 module.exports = {
-    env: {
-        browser: true,
-    },
-    plugins: [
-        "@typescript-eslint",
-        "@typescript-eslint/tslint",
-        "@blueprintjs/blueprint",
-    ],
-    extends: [
-        "plugin:@blueprintjs/blueprint/recommended",
-    ],
-    parser: "@typescript-eslint/parser",
-    parserOptions: {
-        sourceType: "module",
-        ecmaFeatures: {
-            jsx: true,
-        },
-        project: "**/tsconfig.json",
-    },
+    plugins: ["@blueprintjs"],
+    extends: ["plugin:@blueprintjs/recommended"],
+    parserOptions: { ecmaVersion: 2017 },
     rules: {
-        // run the tslint rules which are not yet converted (run inside eslint)
-        "@typescript-eslint/tslint/config": ["error", {
-            "lintFile": path.resolve(__dirname, "./tslint.json"),
-        }],
+        // HACKHACK: this rule impl has too many false positives
+        "@blueprintjs/classes-constants": "off",
     },
     overrides: [
+        {
+            files: ["*.js"],
+            env: {
+                node: true,
+                es6: true,
+            },
+        },
+        {
+            files: ["**/*.{ts,tsx}"],
+            env: {
+                browser: true,
+            },
+            plugins: ["@typescript-eslint", "@typescript-eslint/tslint"],
+            parser: "@typescript-eslint/parser",
+            parserOptions: {
+                sourceType: "module",
+                project: ["{src,test}/tsconfig.json"],
+            },
+            rules: {
+                // run the tslint rules which are not yet converted (run inside eslint)
+                "@typescript-eslint/tslint/config": [
+                    "error",
+                    {
+                        lintFile: path.resolve(__dirname, "./tslint.json"),
+                    },
+                ],
+            },
+        },
         {
             files: ["test/**/*"],
             env: {

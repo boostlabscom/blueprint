@@ -316,7 +316,14 @@ export class DateRangePicker extends AbstractPureComponent2<IDateRangePickerProp
         return [
             <Shortcuts
                 key="shortcuts"
-                {...{ allowSingleDayRange, maxDate, minDate, shortcuts, timePrecision, selectedShortcutIndex }}
+                {...{
+                    allowSingleDayRange,
+                    maxDate,
+                    minDate,
+                    selectedShortcutIndex,
+                    shortcuts,
+                    timePrecision,
+                }}
                 onShortcutClick={this.handleShortcutClick}
             />,
             <Divider key="div" />,
@@ -704,7 +711,7 @@ function getStateChange(
             // If the selected month isn't in either of the displayed months, then
             //   - set the left DayPicker to be the selected month
             //   - set the right DayPicker to +1
-            if (nextValueStartView.isSameMonth(nextValueEndView)) {
+            if (nextValueStartView.isSame(nextValueEndView)) {
                 if (leftView.isSame(nextValueStartView) || rightView.isSame(nextValueStartView)) {
                     // do nothing
                 } else {

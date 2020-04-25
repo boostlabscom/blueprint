@@ -201,10 +201,7 @@ describe("<NumericInput>", () => {
             incrementButton.simulate("mousedown");
             dispatchMouseEvent(document, "mouseup");
 
-            const inputElement = component
-                .find("input")
-                .first()
-                .getDOMNode();
+            const inputElement = component.find("input").first().getDOMNode();
             expect(onValueChangeSpy.calledOnceWithExactly(1, "1", inputElement)).to.be.true;
         });
 
@@ -246,7 +243,9 @@ describe("<NumericInput>", () => {
 
             it("if true, selects all text on focus", () => {
                 const attachTo = document.createElement("div");
-                const input = mount(<NumericInput value={VALUE} selectAllOnFocus={true} />, { attachTo }).find("input");
+                const input = mount(<NumericInput value={VALUE} selectAllOnFocus={true} />, {
+                    attachTo,
+                }).find("input");
                 input.simulate("focus");
                 const { selectionStart, selectionEnd } = input.getDOMNode() as HTMLInputElement;
                 expect(selectionStart).to.equal(0);
@@ -443,9 +442,18 @@ describe("<NumericInput>", () => {
                 runTextInputSuite(charsWithoutShift, EXPECT_DEFAULT_PREVENTED, { metaKey: true });
 
                 const charsWithShift = SAMPLE_CHARS_TO_ALLOW_WITH_ALT_CTRL_META_WITH_SHIFT;
-                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, { shiftKey: true, altKey: true });
-                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, { shiftKey: true, ctrlKey: true });
-                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, { shiftKey: true, metaKey: true });
+                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, {
+                    altKey: true,
+                    shiftKey: true,
+                });
+                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, {
+                    ctrlKey: true,
+                    shiftKey: true,
+                });
+                runTextInputSuite(charsWithShift, EXPECT_DEFAULT_PREVENTED, {
+                    metaKey: true,
+                    shiftKey: true,
+                });
             });
         });
     });
@@ -618,10 +626,7 @@ describe("<NumericInput>", () => {
                 const newValue = component.state().value;
                 expect(newValue).to.equal("0");
 
-                const inputElement = component
-                    .find("input")
-                    .first()
-                    .getDOMNode();
+                const inputElement = component.find("input").first().getDOMNode();
                 expect(onValueChangeSpy.calledOnceWithExactly(0, "0", inputElement)).to.be.true;
             });
 
@@ -695,10 +700,7 @@ describe("<NumericInput>", () => {
                 const newValue = component.state().value;
                 expect(newValue).to.equal("0");
 
-                const inputElement = component
-                    .find("input")
-                    .first()
-                    .getDOMNode();
+                const inputElement = component.find("input").first().getDOMNode();
                 expect(onValueChangeSpy.calledOnceWithExactly(0, "0", inputElement)).to.be.true;
             });
 
@@ -729,10 +731,7 @@ describe("<NumericInput>", () => {
                     .simulate("mousedown");
                 expect(component.state().value).to.equal("2");
 
-                const inputElement = component
-                    .find("input")
-                    .first()
-                    .getDOMNode();
+                const inputElement = component.find("input").first().getDOMNode();
                 expect(onValueChangeSpy.calledOnceWithExactly(2, "2", inputElement)).to.be.true;
             });
         });
@@ -867,6 +866,26 @@ describe("<NumericInput>", () => {
     });
 
     describe("Other", () => {
+        it("disables the increment button when the value is greater than or equal to max", () => {
+            const component = mount(<NumericInput value={100} max={100} />);
+
+            const decrementButton = component.find(Button).last();
+            const incrementButton = component.find(Button).first();
+
+            expect(decrementButton.props().disabled).to.be.false;
+            expect(incrementButton.props().disabled).to.be.true;
+        });
+
+        it("disables the decrement button when the value is less than or equal to min", () => {
+            const component = mount(<NumericInput value={-10} min={-10} />);
+
+            const decrementButton = component.find(Button).last();
+            const incrementButton = component.find(Button).first();
+
+            expect(decrementButton.props().disabled).to.be.true;
+            expect(incrementButton.props().disabled).to.be.false;
+        });
+
         it("disables the input field and buttons when disabled is true", () => {
             const component = mount(<NumericInput disabled={true} />);
 
@@ -1112,7 +1131,10 @@ describe("<NumericInput>", () => {
 
         it(`increments by stepSize on Shift + Alt + ${incrementDescription} when \
             majorStepSize and minorStepSize are null`, () => {
-            const component = createNumericInputForInteractionSuite({ majorStepSize: null, minorStepSize: null });
+            const component = createNumericInputForInteractionSuite({
+                majorStepSize: null,
+                minorStepSize: null,
+            });
 
             simulateIncrement(component, { shiftKey: true, altKey: true });
 
@@ -1122,7 +1144,10 @@ describe("<NumericInput>", () => {
 
         it(`decrements by stepSize on Shift + Alt + ${incrementDescription} when \
             majorStepSize and minorStepSize are null`, () => {
-            const component = createNumericInputForInteractionSuite({ majorStepSize: null, minorStepSize: null });
+            const component = createNumericInputForInteractionSuite({
+                majorStepSize: null,
+                minorStepSize: null,
+            });
 
             simulateDecrement(component, { shiftKey: true, altKey: true });
 

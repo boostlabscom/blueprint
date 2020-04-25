@@ -14,7 +14,6 @@
  */
 
 const path = require("path");
-const webpack = require("webpack");
 
 // webpack plugins
 const { CheckerPlugin } = require("awesome-typescript-loader");
@@ -51,15 +50,22 @@ const plugins = [
 if (!IS_PRODUCTION) {
     plugins.push(
         // Trigger an OS notification when the build succeeds in dev mode.
-        new WebpackNotifierPlugin({ title: PACKAGE_NAME })
+        new WebpackNotifierPlugin({ title: PACKAGE_NAME }),
     );
 }
+
+const extractPlugin = {
+    loader: MiniCssExtractPlugin.loader,
+    options: {
+        esModule: true,
+    },
+};
 
 // Module loaders for .scss files, used in reverse order:
 // compile Sass, apply PostCSS, interpret CSS as modules.
 const scssLoaders = [
     // Only extract CSS to separate file in production mode.
-    IS_PRODUCTION ? MiniCssExtractPlugin.loader : require.resolve("style-loader"),
+    IS_PRODUCTION ? extractPlugin : require.resolve("style-loader"),
     {
         loader: require.resolve("css-loader"),
         options: {
@@ -70,10 +76,7 @@ const scssLoaders = [
     {
         loader: require.resolve("postcss-loader"),
         options: {
-            plugins: [
-                require("autoprefixer"),
-                require("cssnano")({ preset: "default" }),
-            ],
+            plugins: [require("autoprefixer"), require("cssnano")({ preset: "default" })],
         },
     },
     require.resolve("sass-loader"),
@@ -129,6 +132,6 @@ module.exports = {
     plugins,
 
     resolve: {
-        extensions: [ ".js", ".jsx", ".ts", ".tsx", ".scss" ],
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".scss"],
     },
 };
